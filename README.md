@@ -1,6 +1,6 @@
-# CommitAssist — Smart Commit Messages for Visual Studio
+# CommitAssist - Smart Commit Messages for Visual Studio
 
-Generates [Conventional Commits](https://www.conventionalcommits.org/) messages from your **staged changes only**. No diff text is ever shown to the user. Everything runs locally — no API calls, no telemetry.
+Generates [Conventional Commits](https://www.conventionalcommits.org/) messages from your **staged changes only**. No diff text is ever shown to the user. Everything runs locally. No API calls, no telemetry.
 
 ---
 
@@ -45,7 +45,7 @@ git diff --cached
 |---|---|
 | Visual Studio | 2022 (17.6+) |
 | .NET | 8.0 (Windows) |
-| Git | Any — accessed via LibGit2Sharp (bundled) |
+| Git | Any (accessed via LibGit2Sharp, bundled) |
 
 ---
 
@@ -53,7 +53,7 @@ git diff --cached
 
 ```bash
 git clone https://github.com/anaya-upadhyay/CommitAssist.git
-cd commitassist
+cd CommitAssist
 dotnet restore
 dotnet build -c Release
 ```
@@ -64,9 +64,9 @@ Output: `CommitAssist/bin/Release/CommitAssist.vsix`. Double-click to install.
 
 ## First-run training
 
-On first solution open, CommitAssist scans up to **2,000 commits** in your repo history, extracts features from each diff, and trains an ML.NET multiclass classifier. This takes 30–120 seconds depending on repo size and runs in the background.
+On first solution open, CommitAssist scans up to **2,000 commits** in your repo history, extracts features from each diff, and trains an ML.NET multiclass classifier. This takes 30-120 seconds depending on repo size and runs in the background.
 
-**Minimum viable training:** ~50 commits with Conventional Commit prefixes (`feat:`, `fix:`, `chore:`, etc.). Repos without Conventional Commits still work — the rule-based fallback is always active.
+**Minimum viable training:** ~50 commits with Conventional Commit prefixes (`feat:`, `fix:`, `chore:`, etc.). Repos without Conventional Commits still work; the rule-based fallback is always active.
 
 Training data and the model file are stored per-repo in:
 
@@ -83,7 +83,7 @@ Nothing leaves this folder. No network calls are made.
 
 ## Incremental background training
 
-Every 3 minutes CommitAssist checks for new commits. When 50 or more new labelled examples have accumulated, it retrains silently and hot-swaps the model — no restart required.
+Every 3 minutes CommitAssist checks for new commits. When 50 or more new labelled examples have accumulated, it retrains silently and hot-swaps the model. No restart required.
 
 Over time the model picks up your team's specific patterns and conventions.
 
@@ -98,8 +98,8 @@ Over time the model picks up your team's specific patterns and conventions.
 4. Edit, accept, or regenerate.
 
 ### Via the CommitAssist tool window
-- **View → Other Windows → CommitAssist**, or
-- **Tools → CommitAssist: Generate Commit Message**, or
+- **View -> Other Windows -> CommitAssist**, or
+- **Tools -> CommitAssist: Generate Commit Message**, or
 - **Ctrl+Shift+G**
 
 The tool window shows three variants. Click **Use this** to inject into Git Changes, or **Copy** to put it on the clipboard.
@@ -107,7 +107,7 @@ The tool window shows three variants. Click **Use this** to inject into Git Chan
 ### Scope warning
 If your staged diff spans four or more directories:
 
-> ⚠ This diff touches 5 directories. Consider splitting into smaller, focused commits.
+> This diff touches 5 directories. Consider splitting into smaller, focused commits.
 
 ---
 
@@ -125,9 +125,9 @@ feat(UserService): add GetUserById
 
 | Variant | Subject | Body | Footer |
 |---|---|---|---|
-| Concise | ✓ | — | — |
-| Detailed | ✓ | ✓ | — |
-| Ticket-linked | ✓ | ✓ | `Refs: #` |
+| Concise | yes | - | - |
+| Detailed | yes | yes | - |
+| Ticket-linked | yes | yes | `Refs: #` |
 
 ---
 
@@ -139,7 +139,7 @@ feat(UserService): add GetUserById
 
 ## Confidence score
 
-Each suggestion shows a confidence score. Before the model has been trained (or when fewer than 10 training samples exist), the rule-based fallback returns 100% — it's deterministic, not probabilistic.
+Each suggestion shows a confidence score. Before the model has been trained (or when fewer than 10 training samples exist), the rule-based fallback returns 100%. It's deterministic, not probabilistic.
 
 Once the ML model is loaded, the score is the SdcaMaximumEntropy classifier's output probability for the winning class.
 
@@ -149,12 +149,12 @@ Once the ML model is loaded, the score is the SdcaMaximumEntropy classifier's ou
 
 | File | What it does |
 |---|---|
-| `CommitAssistPackage.cs` | Async package entry point — bootstraps services, handles solution events |
-| `Services/GitService.cs` | LibGit2Sharp wrapper — staged diffs and commit history |
+| `CommitAssistPackage.cs` | Async package entry point that bootstraps services and handles solution events |
+| `Services/GitService.cs` | LibGit2Sharp wrapper for staged diffs and commit history |
 | `Services/DiffParserService.cs` | Raw patch → structural signals (layers, file types, line counts) |
 | `Services/RoslynAnalyserService.cs` | Added lines → symbol names via Roslyn partial parse |
 | `Services/FeatureBuilderService.cs` | Combines parser + Roslyn into a `DiffFeatures` record |
-| `ML/ModelTrainerAndPredictor.cs` | ML.NET pipeline — training, serialisation, inference |
+| `ML/ModelTrainerAndPredictor.cs` | ML.NET pipeline for training, serialisation, and inference |
 | `Services/CommitMessageTemplateEngine.cs` | Assembles commit message variants |
 | `Services/BackgroundTrainingService.cs` | Initial training + incremental watch loop |
 | `UI/CommitMessageToolWindow*.cs/xaml` | WPF tool window with MVVM ViewModel |
@@ -168,7 +168,7 @@ Once the ML model is loaded, the score is the SdcaMaximumEntropy classifier's ou
 Pull requests welcome. Before submitting:
 - Ensure the VSIX builds cleanly against VS 2022 SDK 17.x.
 - Add a `TrainingSample` test for any new feature signal.
-- Do not add network calls — this must stay fully local.
+- Do not add network calls; this must stay fully local.
 
 ---
 
