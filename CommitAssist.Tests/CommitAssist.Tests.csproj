@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>CommitAssist.Tests</RootNamespace>
+    <IsPackable>false</IsPackable>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MSTest.TestAdapter"    Version="3.1.1" />
+    <PackageReference Include="MSTest.TestFramework"  Version="3.1.1" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0" />
+    <PackageReference Include="LibGit2Sharp"          Version="0.27.2" />
+    <PackageReference Include="Microsoft.ML"          Version="3.0.0" />
+    <PackageReference Include="Newtonsoft.Json"       Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Reference the main project sources directly so tests can reach internals -->
+    <Compile Include="..\CommitAssist\Models\Models.cs" />
+    <Compile Include="..\CommitAssist\Services\DiffParserService.cs" />
+    <Compile Include="..\CommitAssist\Services\RoslynAnalyserService.cs" />
+    <Compile Include="..\CommitAssist\Services\FeatureBuilderService.cs" />
+    <Compile Include="..\CommitAssist\Services\CommitMessageTemplateEngine.cs" />
+    <Compile Include="..\CommitAssist\Services\GitService.cs" />
+    <Compile Include="..\CommitAssist\ML\ModelTrainerAndPredictor.cs" />
+  </ItemGroup>
+
+</Project>

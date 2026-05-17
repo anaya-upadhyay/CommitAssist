@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Visual Studio Command Table (.vsct)
+  Compiled into Menus.ctmenu by VSSDK build tools.
+  GUIDs must match the constants in CommitAssistPackage and GenerateCommitMessageCommand.
+-->
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable"
+              xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <Extern href="stdidcmd.h"/>
+  <Extern href="vsshlids.h"/>
+
+  <!-- ── Symbol declarations ─────────────────────────────────────────── -->
+  <Symbols>
+    <GuidSymbol name="guidCommitAssistPackage"
+                value="{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}" />
+
+    <GuidSymbol name="guidCommitAssistCommandSet"
+                value="{E5F6A7B8-C9D0-1234-EF01-345678901234}">
+      <!-- Command IDs must match the constants in GenerateCommitMessageCommand.cs -->
+      <IDSymbol name="cmdidGenerate"       value="0x0100" />
+      <IDSymbol name="cmdidShowToolWindow" value="0x0101" />
+      <!-- Menu group that holds our commands -->
+      <IDSymbol name="MyMenuGroup"         value="0x1020" />
+    </GuidSymbol>
+
+    <!-- Image strip for toolbar icons -->
+    <GuidSymbol name="guidCommitAssistImages"
+                value="{F1E2D3C4-B5A6-7890-FEDC-BA9876543210}">
+      <IDSymbol name="bmpGenerate"  value="1" />
+      <IDSymbol name="bmpToolWin"   value="2" />
+    </GuidSymbol>
+  </Symbols>
+
+  <!-- ── Bitmaps (toolbar icons) ────────────────────────────────────── -->
+  <Bitmaps>
+    <Bitmap guid="guidCommitAssistImages"
+            href="Resources\CommitAssist.png"
+            usedList="bmpGenerate, bmpToolWin" />
+  </Bitmaps>
+
+  <!-- ── Commands ───────────────────────────────────────────────────── -->
+  <Commands package="guidCommitAssistPackage">
+
+    <Groups>
+      <!--
+        Place our commands inside the standard Tools menu.
+        guidSHLMainMenu / IDM_VS_MENU_TOOLS = the Tools top-level menu.
+        Priority 0x0600 puts it after built-in Tools items.
+      -->
+      <Group guid="guidCommitAssistCommandSet" id="MyMenuGroup" priority="0x0600">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS" />
+      </Group>
+    </Groups>
+
+    <Buttons>
+
+      <!-- ── Generate Commit Message ──────────────────────────────── -->
+      <Button guid="guidCommitAssistCommandSet"
+              id="cmdidGenerate"
+              priority="0x0100"
+              type="Button">
+        <Parent guid="guidCommitAssistCommandSet" id="MyMenuGroup" />
+        <Icon guid="guidCommitAssistImages" id="bmpGenerate" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>CommitAssist: Generate Commit Message</ButtonText>
+          <ToolTipText>Analyse staged changes and generate a commit message</ToolTipText>
+        </Strings>
+      </Button>
+
+      <!-- ── Show Tool Window ──────────────────────────────────────── -->
+      <Button guid="guidCommitAssistCommandSet"
+              id="cmdidShowToolWindow"
+              priority="0x0101"
+              type="Button">
+        <Parent guid="guidCommitAssistCommandSet" id="MyMenuGroup" />
+        <Icon guid="guidCommitAssistImages" id="bmpToolWin" />
+        <Strings>
+          <ButtonText>CommitAssist: Show Window</ButtonText>
+          <ToolTipText>Open the CommitAssist tool window</ToolTipText>
+        </Strings>
+      </Button>
+
+    </Buttons>
+
+  </Commands>
+
+  <!-- ── Keyboard shortcuts ─────────────────────────────────────────── -->
+  <KeyBindings>
+    <!--
+      Ctrl+Shift+G → Generate Commit Message
+      editor = {5EFC7975-14BC-11CF-9B2B-00AA00573819} (global scope)
+    -->
+    <KeyBinding guid="guidCommitAssistCommandSet"
+                id="cmdidGenerate"
+                editor="{5EFC7975-14BC-11CF-9B2B-00AA00573819}"
+                key1="G"
+                mod1="Control Shift" />
+  </KeyBindings>
+
+</CommandTable>

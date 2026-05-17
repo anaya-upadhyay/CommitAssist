@@ -1,0 +1,195 @@
+<UserControl x:Class="CommitAssist.UI.CommitMessageToolWindowControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="480" d:DesignWidth="340"
+             Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}">
+
+    <UserControl.Resources>
+        <!-- Reusable button style -->
+        <Style x:Key="ActionButton" TargetType="Button">
+            <Setter Property="Padding"           Value="10,4"/>
+            <Setter Property="Margin"            Value="0,0,6,0"/>
+            <Setter Property="FontSize"          Value="11"/>
+            <Setter Property="Cursor"            Value="Hand"/>
+        </Style>
+        <!-- Card panel for each suggestion -->
+        <Style x:Key="SuggestionCard" TargetType="Border">
+            <Setter Property="BorderThickness"   Value="1"/>
+            <Setter Property="CornerRadius"      Value="4"/>
+            <Setter Property="Padding"           Value="10"/>
+            <Setter Property="Margin"            Value="0,0,0,8"/>
+            <Setter Property="BorderBrush"
+                    Value="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}"/>
+            <Setter Property="Background"
+                    Value="{DynamicResource {x:Static SystemColors.ControlLightBrushKey}}"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>   <!-- Header + actions -->
+            <RowDefinition Height="Auto"/>   <!-- Scope warning -->
+            <RowDefinition Height="*"/>      <!-- Suggestions list -->
+            <RowDefinition Height="Auto"/>   <!-- Status bar -->
+        </Grid.RowDefinitions>
+
+        <!-- ── Header ──────────────────────────────────────────────────── -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,10">
+            <TextBlock Text="CommitAssist"
+                       FontSize="14" FontWeight="SemiBold"
+                       Foreground="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"
+                       Margin="0,0,0,6"/>
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="GenerateButton"
+                        Content="⚡ Generate"
+                        Style="{StaticResource ActionButton}"
+                        Click="GenerateButton_Click"/>
+                <Button x:Name="CopyPrimaryButton"
+                        Content="Copy"
+                        Style="{StaticResource ActionButton}"
+                        Click="CopyPrimaryButton_Click"
+                        IsEnabled="{Binding HasSuggestions}"/>
+                <Button x:Name="ApplyButton"
+                        Content="Apply to Git Changes"
+                        Style="{StaticResource ActionButton}"
+                        Click="ApplyButton_Click"
+                        IsEnabled="{Binding HasSuggestions}"/>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- ── Scope warning ───────────────────────────────────────────── -->
+        <Border Grid.Row="1"
+                x:Name="ScopeWarningPanel"
+                Background="#FFF3CD"
+                BorderBrush="#FFEEBA"
+                BorderThickness="1"
+                CornerRadius="4"
+                Padding="8,6"
+                Margin="0,0,0,8"
+                Visibility="{Binding ScopeWarningVisibility}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="⚠ " FontSize="12" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding ScopeWarningMessage}"
+                           FontSize="11"
+                           TextWrapping="Wrap"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+
+        <!-- ── Suggestion cards ────────────────────────────────────────── -->
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+
+                <!-- Loading indicator -->
+                <StackPanel x:Name="LoadingPanel"
+                            Visibility="{Binding LoadingVisibility}"
+                            HorizontalAlignment="Center"
+                            Margin="0,40,0,0">
+                    <TextBlock Text="Analysing staged changes…"
+                               FontSize="12"
+                               Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
+                               HorizontalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Empty state -->
+                <StackPanel x:Name="EmptyPanel"
+                            Visibility="{Binding EmptyVisibility}"
+                            HorizontalAlignment="Center"
+                            Margin="0,40,0,0">
+                    <TextBlock Text="No staged changes detected."
+                               FontSize="12"
+                               Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="Stage files in Git Changes, then click Generate."
+                               FontSize="11"
+                               Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
+                               HorizontalAlignment="Center"
+                               TextWrapping="Wrap"
+                               MaxWidth="260"
+                               TextAlignment="Center"
+                               Margin="0,4,0,0"/>
+                </StackPanel>
+
+                <!-- Suggestion list -->
+                <ItemsControl ItemsSource="{Binding Suggestions}"
+                              Visibility="{Binding SuggestionsVisibility}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Style="{StaticResource SuggestionCard}">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <!-- Style label + confidence badge -->
+                                    <StackPanel Grid.Row="0" Orientation="Horizontal"
+                                                Margin="0,0,0,4">
+                                        <TextBlock Text="{Binding StyleLabel}"
+                                                   FontSize="10"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="#0078D4"/>
+                                        <TextBlock Text="{Binding ConfidenceLabel}"
+                                                   FontSize="10"
+                                                   Margin="8,0,0,0"
+                                                   Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                                    </StackPanel>
+
+                                    <!-- Subject line (monospace, selectable) -->
+                                    <TextBox Grid.Row="1"
+                                             Text="{Binding Subject, Mode=OneWay}"
+                                             FontFamily="Consolas, Courier New"
+                                             FontSize="12"
+                                             IsReadOnly="False"
+                                             BorderThickness="0"
+                                             Background="Transparent"
+                                             TextWrapping="Wrap"
+                                             Margin="0,0,0,4"/>
+
+                                    <!-- Body preview (collapsed if empty) -->
+                                    <TextBox Grid.Row="2"
+                                             Text="{Binding Body, Mode=OneWay}"
+                                             FontFamily="Consolas, Courier New"
+                                             FontSize="10"
+                                             IsReadOnly="True"
+                                             BorderThickness="0"
+                                             Background="Transparent"
+                                             Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
+                                             TextWrapping="Wrap"
+                                             MaxLines="6"
+                                             Visibility="{Binding BodyVisibility}"
+                                             Margin="0,0,0,6"/>
+
+                                    <!-- Per-card actions -->
+                                    <StackPanel Grid.Row="3" Orientation="Horizontal">
+                                        <Button Content="Use this"
+                                                Tag="{Binding}"
+                                                Style="{StaticResource ActionButton}"
+                                                Click="UseThisButton_Click"/>
+                                        <Button Content="Copy"
+                                                Tag="{Binding}"
+                                                Style="{StaticResource ActionButton}"
+                                                Click="CopySuggestionButton_Click"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- ── Status bar ──────────────────────────────────────────────── -->
+        <TextBlock Grid.Row="3"
+                   Text="{Binding StatusMessage}"
+                   FontSize="10"
+                   Foreground="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
+                   Margin="0,6,0,0"/>
+    </Grid>
+</UserControl>
