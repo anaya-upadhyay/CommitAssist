@@ -78,9 +78,9 @@ namespace CommitAssist.Services
                     await CheckForNewCommitsAsync();
                 }
                 catch (TaskCanceledException) { break; }
-                catch
+                catch (Exception ex)
                 {
-                    // Background training must never crash the extension
+                    System.Diagnostics.Debug.WriteLine($"[CommitAssist] Watch loop error: {ex.Message}");
                 }
             }
         }
@@ -149,9 +149,9 @@ namespace CommitAssist.Services
                                                   : symbols.DetectedLayer
                     });
                 }
-                catch
+                catch (Exception ex)
                 {
-                    // Skip malformed commits — one bad entry shouldn't abort the full scan
+                    System.Diagnostics.Debug.WriteLine($"[CommitAssist] Skipped commit {commit.Sha}: {ex.Message}");
                 }
             }
 
@@ -215,9 +215,7 @@ namespace CommitAssist.Services
         }
 
         private static int CountUnseen(List<TrainingSample> all) =>
-            all.Count % IncrementalRetriggerThreshold == 0
-                ? IncrementalRetriggerThreshold
-                : all.Count % IncrementalRetriggerThreshold;
+            all.Count % IncrementalRetriggerThreshold;
 
         private MetaData? LoadMeta()
         {

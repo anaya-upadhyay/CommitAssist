@@ -27,17 +27,13 @@
     <!-- Image strip for toolbar icons -->
     <GuidSymbol name="guidCommitAssistImages"
                 value="{F1E2D3C4-B5A6-7890-FEDC-BA9876543210}">
-      <IDSymbol name="bmpGenerate"  value="1" />
-      <IDSymbol name="bmpToolWin"   value="2" />
+      <IDSymbol name="bmpGenerate" value="1" />
+      <IDSymbol name="bmpToolWin"  value="2" />
     </GuidSymbol>
-  </Symbols>
 
-  <!-- ── Bitmaps (toolbar icons) ────────────────────────────────────── -->
-  <Bitmaps>
-    <Bitmap guid="guidCommitAssistImages"
-            href="Resources\CommitAssist.png"
-            usedList="bmpGenerate, bmpToolWin" />
-  </Bitmaps>
+    <!-- Global keyboard scope (CMDSETID_StandardCommandSet97) -->
+    <GuidSymbol name="guidVSStd97" value="{5EFC7975-14BC-11CF-9B2B-00AA00573819}" />
+  </Symbols>
 
   <!-- ── Commands ───────────────────────────────────────────────────── -->
   <Commands package="guidCommitAssistPackage">
@@ -62,8 +58,6 @@
               type="Button">
         <Parent guid="guidCommitAssistCommandSet" id="MyMenuGroup" />
         <Icon guid="guidCommitAssistImages" id="bmpGenerate" />
-        <CommandFlag>DynamicVisibility</CommandFlag>
-        <CommandFlag>DefaultInvisible</CommandFlag>
         <Strings>
           <ButtonText>CommitAssist: Generate Commit Message</ButtonText>
           <ToolTipText>Analyse staged changes and generate a commit message</ToolTipText>
@@ -85,17 +79,23 @@
 
     </Buttons>
 
+    <!-- ── Bitmaps (toolbar icons) ────────────────────────────────── -->
+    <Bitmaps>
+      <Bitmap guid="guidCommitAssistImages"
+              href="Resources\CommitAssist.png"
+              usedList="bmpGenerate, bmpToolWin" />
+    </Bitmaps>
+
   </Commands>
 
   <!-- ── Keyboard shortcuts ─────────────────────────────────────────── -->
   <KeyBindings>
     <!--
-      Ctrl+Shift+G → Generate Commit Message
-      editor = {5EFC7975-14BC-11CF-9B2B-00AA00573819} (global scope)
+      Ctrl+Shift+G → Generate Commit Message (global scope)
     -->
     <KeyBinding guid="guidCommitAssistCommandSet"
                 id="cmdidGenerate"
-                editor="{5EFC7975-14BC-11CF-9B2B-00AA00573819}"
+                editor="guidVSStd97"
                 key1="G"
                 mod1="Control Shift" />
   </KeyBindings>

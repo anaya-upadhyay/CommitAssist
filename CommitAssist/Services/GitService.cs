@@ -85,9 +85,9 @@ namespace CommitAssist.Services
                     if (commit.Parents.Any())
                         diff = _repo.Diff.Compare<Patch>(commit.Parents.First().Tree, commit.Tree);
                 }
-                catch
+                catch (Exception ex)
                 {
-                    // Some edge-case commits (merges, root) can fail — skip them
+                    System.Diagnostics.Debug.WriteLine($"[CommitAssist] Skipped diff for {commit.Sha}: {ex.Message}");
                     continue;
                 }
 

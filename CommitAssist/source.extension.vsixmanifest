@@ -4,14 +4,16 @@
                  xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
     <Identity Id="CommitAssist.Extension"
-              Version="1.0.0"
+              Version="1.0.7"
               Language="en-US"
-              Publisher="CommitAssist" />
-    <DisplayName>CommitAssist — Smart Commit Messages</DisplayName>
+              Publisher="Anaya Upadhyay" />
+    <DisplayName>CommitAssist &#x2192; Smart Commit Messages</DisplayName>
     <Description xml:space="preserve">
       Generates structured, Conventional Commit messages from your staged Git changes.
       Uses Roslyn for symbol extraction and an ML.NET classifier trained on your own
-      repository history. Fully local — no data ever leaves your machine.
+      repository history. Fully local - no data ever leaves your machine.
+
+      Copyright &#169; 2026 Anaya Upadhyay. All rights reserved.
     </Description>
     <MoreInfo>https://github.com/anaya-upadhyay/CommitAssist</MoreInfo>
     <License>LICENSE.txt</License>
@@ -21,33 +23,27 @@
 
   <Installation>
     <!-- [17.0,) = VS 2022 and every future major version -->
-    <InstallationTarget Id="Microsoft.VisualStudio.Community"    Version="[17.0,)" />
-    <InstallationTarget Id="Microsoft.VisualStudio.Professional" Version="[17.0,)" />
-    <InstallationTarget Id="Microsoft.VisualStudio.Enterprise"   Version="[17.0,)" />
+    <InstallationTarget Id="Microsoft.VisualStudio.Community"    Version="[17.0,)">
+      <ProductArchitecture>amd64</ProductArchitecture>
+    </InstallationTarget>
+    <InstallationTarget Id="Microsoft.VisualStudio.Professional" Version="[17.0,)">
+      <ProductArchitecture>amd64</ProductArchitecture>
+    </InstallationTarget>
+    <InstallationTarget Id="Microsoft.VisualStudio.Enterprise"   Version="[17.0,)">
+      <ProductArchitecture>amd64</ProductArchitecture>
+    </InstallationTarget>
   </Installation>
-
-  <Dependencies>
-    <Dependency Id="Microsoft.Framework.NDP"
-                DisplayName=".NET 8.0"
-                d:Source="Auto"
-                Version="[8.0,)" />
-  </Dependencies>
 
   <Prerequisites>
     <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor"
                   Version="[17.0,)"
                   DisplayName="Visual Studio core editor" />
-    <Prerequisite Id="Component.GitHub.VisualStudio"
-                  Version="[2.0,)"
-                  DisplayName="GitHub Extension for Visual Studio"
-                  IsOptional="true" />
   </Prerequisites>
 
   <Assets>
     <Asset Type="Microsoft.VisualStudio.VsPackage"
-           d:Source="Project"
-           d:ProjectName="%CurrentProject%"
-           Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
+           d:Source="File"
+           Path="CommitAssist.pkgdef" />
     <Asset Type="Microsoft.VisualStudio.MefComponent"
            d:Source="Project"
            d:ProjectName="%CurrentProject%"

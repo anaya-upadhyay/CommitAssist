@@ -1,6 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">18.0</VisualStudioVersion>
+    <VSSDKBuildToolsAutoSetup>true</VSSDKBuildToolsAutoSetup>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <TargetFramework>net8.0-windows</TargetFramework>
     <OutputType>Library</OutputType>
     <RootNamespace>CommitAssist</RootNamespace>
@@ -9,7 +15,10 @@
     <Nullable>enable</Nullable>
 
     <!-- VSIX packaging properties -->
-    <GeneratePkgDefFile>true</GeneratePkgDefFile>
+    <!-- CreatePkgDef.exe is a .NET Framework tool that cannot reflect on net8.0 assemblies;
+         registration is declared manually in CommitAssist.pkgdef instead. -->
+    <GeneratePkgDefFile>false</GeneratePkgDefFile>
+    <UseCodebase>true</UseCodebase>
     <IncludeAssemblyInVSIXContainer>true</IncludeAssemblyInVSIXContainer>
     <IncludeDebugSymbolsInVSIXContainer>false</IncludeDebugSymbolsInVSIXContainer>
     <IncludeDebugSymbolsInLocalVSIXDeployment>true</IncludeDebugSymbolsInLocalVSIXDeployment>
@@ -22,7 +31,7 @@
   <ItemGroup>
     <!-- VS2022+ SDK — ExcludeAssets=runtime avoids shipping VS assemblies inside the VSIX -->
     <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.0.31902.203" ExcludeAssets="runtime" />
-    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.0.5232" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="18.6.38345" PrivateAssets="all" />
 
     <!-- Git access -->
     <PackageReference Include="LibGit2Sharp" Version="0.27.2" />
@@ -39,10 +48,30 @@
   </ItemGroup>
 
   <ItemGroup>
+    <VSCTCompile Include="Menus.vsct">
+      <ResourceName>Menus.ctmenu</ResourceName>
+    </VSCTCompile>
+    <!-- Remove SDK's auto-glob include, then re-Include with VSSDK MergeWithCTO metadata.
+         Update= does not propagate OutputResource metadata that MergeCtoResource target requires;
+         Remove+Include ensures the item has all required metadata from the start. -->
+    <EmbeddedResource Remove="VSPackage.resx" />
+    <EmbeddedResource Include="VSPackage.resx">
+      <MergeWithCTO>true</MergeWithCTO>
+      <ManifestResourceName>Menus.ctmenu</ManifestResourceName>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
     <Resource Include="Resources\CommitAssist.png" />
+    <Content Include="CommitAssist.pkgdef">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="LICENSE.txt">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
   </ItemGroup>
 
 </Project>

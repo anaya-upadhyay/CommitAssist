@@ -1,0 +1,26 @@
+// CommitAssist VS package registration
+// Hand-written because CreatePkgDef.exe cannot reflect on net8.0 assemblies.
+// Keep in sync with CommitAssistPackage.cs attributes.
+
+[$RootKey$\Packages\{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}]
+@="CommitAssist"
+"InprocServer32"="$WinDir$\SYSTEM32\mscoree.dll"
+"Class"="CommitAssist.CommitAssistPackage"
+"CodeBase"="$PackageFolder$\CommitAssist.dll"
+"AllowsBackgroundLoad"=dword:00000001
+"ManagedResourcesOnly"=dword:00000001
+
+// AutoLoad on SolutionOpening context — D2567162... = VSConstants.UICONTEXT.SolutionOpening_string
+// PackageAutoLoadFlags.BackgroundLoad = 2
+[$RootKey$\AutoLoadPackages\{D2567162-F650-46C8-BBF8-1DE2EBA8DC5B}]
+"{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}"=dword:00000002
+
+// Menu resource — KEY must be package GUID (not command set GUID)
+// Matches [ProvideMenuResource("Menus.ctmenu", 1)] on CommitAssistPackage
+[$RootKey$\Menus]
+"{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}"=", Menus.ctmenu, 1"
+
+// Tool window
+[$RootKey$\ToolWindows\{D4E5F6A7-B8C9-0123-DEF0-234567890123}]
+@="CommitAssist"
+"Package"="{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}"
